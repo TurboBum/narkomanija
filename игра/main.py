@@ -1,6 +1,7 @@
 from pygame import *
 from random import randint
 from time import time
+from random import randint
 
 background = transform.scale(image.load("battleground.png"),(1000,1000))
 windows = display.set_mode((1000, 1000))
@@ -90,6 +91,8 @@ class player(gamesprite):
             if keys[K_d] :
                 self.rect.x = self.rect.x - self.speed
 
+
+
 class Bullet (gamesprite):
     def update(self):
         #print(self.proverka)
@@ -105,21 +108,23 @@ class Bullet (gamesprite):
             self.kill()
 
 class samagon(gamesprite):
-    def __init__(self, image1, speed, x, y, proverka, group):
-        super().__init__(image1, speed, x, y, proverka)
-        self.group = group
     def update(self):
-        hits = sprite.groupcollide(allsprites, self.group, False, True)
+        hits = sprite.groupcollide(allsprites, bonuce_speed, False, False)
         for hit in hits:
             hero.speed = hero.speed + 5
-            self.kill()
+            #Исчезание спрайтов замедление
+            self.rect.y = randint(10,900)
+            self.rect.x = randint(10,900)
 
 class konjak(gamesprite):
     def update(self):
-        hits = sprite.groupcollide(allsprites, bonuce_zamedlenie, False, True)
+        hits = sprite.groupcollide(allsprites, bonuce_zamedlenie, False, False)
         for hit in hits:
+
             hero.speed = 1
-            bonuce_zamedlenie.remove(zamedlenie)
+            #Исчезание спрайтов замедление
+            self.rect.y = randint(10,900)
+            self.rect.x = randint(10,900)
 
             
 bullets = sprite.Group() #пули
@@ -132,10 +137,16 @@ hero = player('tank1.png', 2, 275, 250,1)
 allsprites.add(hero)
 kamen = prepatstvie('obstacle.png', 1, 300, 400,0)
 bads.add(kamen)
-uskorenie = samagon('spedd.png', 1, 850, 700,0, bonuce_speed)
+
+uskorenie = samagon('spedd.png', 1, 850, 700,0)
+uskorenie1 = samagon('spedd.png', 1, 80, 700,0)
 bonuce_speed.add(uskorenie)
+bonuce_speed.add(uskorenie1)
 zamedlenie = konjak('ulitka.png', 1, 700, 900,0)
-bonuce_zamedlenie.add(zamedlenie)
+zamedlenie1 = konjak('ulitka.png', 1, 70, 900,0)
+bonuce_zamedlenie.add(zamedlenie1,zamedlenie)
+
+
 
 mixer.init()
 
@@ -153,10 +164,20 @@ while game:
     hero.reset()
     kamen.update()
     kamen.reset()
+
+
     uskorenie.update()
     uskorenie.reset()
-    zamedlenie.update()
+    uskorenie1.update()
+    uskorenie1.reset()
+
+
     zamedlenie.reset()
+    zamedlenie.update()
+    zamedlenie1.reset()
+    zamedlenie1.update()
+
+
     hero.stolknovene()
     bullets.draw(windows)
     bullets.update()
